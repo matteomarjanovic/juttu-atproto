@@ -8,9 +8,10 @@ export class DB<Schema extends DatabaseSchema> implements Disposable {
     dbName: string,
     migrations: ReadonlyArray<(db: IDBDatabase) => void>,
     txOptions?: IDBTransactionOptions,
+    indexedDBFactory: IDBFactory = indexedDB,
   ) {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open(dbName, migrations.length)
+      const request = indexedDBFactory.open(dbName, migrations.length)
 
       request.onerror = () => reject(request.error)
       request.onsuccess = () => resolve(request.result)

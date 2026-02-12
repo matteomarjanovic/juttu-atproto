@@ -73,6 +73,7 @@ export type BrowserOAuthDatabaseOptions = {
   name?: string
   durability?: 'strict' | 'relaxed'
   cleanupInterval?: number
+  indexedDBFactory?: IDBFactory
 }
 
 export class BrowserOAuthDatabase {
@@ -91,6 +92,7 @@ export class BrowserOAuthDatabase {
         },
       ],
       { durability: options?.durability ?? 'strict' },
+      options?.indexedDBFactory,
     )
 
     this.#cleanupInterval = setInterval(() => {

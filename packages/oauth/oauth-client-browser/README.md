@@ -173,13 +173,14 @@ IndexedDB instead of the partitioned one. This can be done by passing a custom
 import { BrowserOAuthClient } from '@atproto/oauth-client-browser'
 
 // Request storage access to use the main window's IndexedDB
-const handle = await navigator.storage.getDirectory()
-// Or use: await document.requestStorageAccess()
+// This is necessary for cross-origin iframes to access unpartitioned storage
+await document.requestStorageAccess()
 
 const client = new BrowserOAuthClient({
   handleResolver: 'https://my-pds.example.com',
   databaseOptions: {
-    indexedDBFactory: indexedDB, // Use the main window's indexedDB after requestStorageAccess()
+    // After requestStorageAccess(), indexedDB will refer to the main window's IndexedDB
+    indexedDBFactory: indexedDB,
   },
 })
 ```

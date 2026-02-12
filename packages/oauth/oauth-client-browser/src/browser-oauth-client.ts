@@ -15,7 +15,10 @@ import {
   atprotoLoopbackClientMetadata,
   isOAuthClientIdLoopback,
 } from '@atproto/oauth-types'
-import { BrowserOAuthDatabase } from './browser-oauth-database.js'
+import {
+  BrowserOAuthDatabase,
+  BrowserOAuthDatabaseOptions,
+} from './browser-oauth-database.js'
 import { BrowserRuntimeImplementation } from './browser-runtime-implementation.js'
 import { LoginContinuedInParentWindowError } from './errors.js'
 import {
@@ -29,6 +32,7 @@ export type BrowserOAuthClientOptions = Simplify<
     clientMetadata?: Readonly<OAuthClientMetadataInput>
     responseMode?: Exclude<OAuthResponseMode, 'form_post'>
     fetch?: Fetch
+    databaseOptions?: BrowserOAuthDatabaseOptions
   } & Omit<
     OAuthClientOptions,
     // Overridden by this lib
@@ -108,6 +112,7 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
     ),
     // "fragment" is a safer default as the query params will not be sent to the server
     responseMode = 'fragment',
+    databaseOptions,
     ...options
   }: BrowserOAuthClientOptions) {
     if (!globalThis.crypto?.subtle) {
@@ -119,7 +124,7 @@ export class BrowserOAuthClient extends OAuthClient implements Disposable {
       throw new TypeError(`Invalid response mode: ${responseMode}`)
     }
 
-    const database = new BrowserOAuthDatabase()
+    const database = new BrowserOAuthDatabase(databaseOptions)
 
     super({
       ...options,

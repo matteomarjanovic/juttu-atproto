@@ -153,6 +153,37 @@ following optional configuration options:
   needed unless you run an entire atproto stack locally. Defaults to
   `https://plc.directory`.
 
+- `databaseOptions`: An optional configuration object for the IndexedDB database
+  used to store session data. This can include:
+  - `name`: The name of the IndexedDB database (defaults to `@atproto-oauth-client`)
+  - `durability`: `'strict'` or `'relaxed'` (defaults to `'strict'`)
+  - `cleanupInterval`: How often to clean up expired data in milliseconds (defaults to `30000`)
+  - `indexedDBFactory`: A custom `IDBFactory` instance to use instead of the global `indexedDB`.
+    This is useful when using the library in an iframe and you want to use the main window's
+    IndexedDB instead of the partitioned one. You can obtain this using the
+    `requestStorageAccess()` method.
+
+#### Using a custom IndexedDB instance in an iframe
+
+When using the OAuth client in an iframe, you may want to use the main window's
+IndexedDB instead of the partitioned one. This can be done by passing a custom
+`IDBFactory` instance obtained via the Storage Access API:
+
+```typescript
+import { BrowserOAuthClient } from '@atproto/oauth-client-browser'
+
+// Request storage access to use the main window's IndexedDB
+const handle = await navigator.storage.getDirectory()
+// Or use: await document.requestStorageAccess()
+
+const client = new BrowserOAuthClient({
+  handleResolver: 'https://my-pds.example.com',
+  databaseOptions: {
+    indexedDBFactory: indexedDB, // Use the main window's indexedDB after requestStorageAccess()
+  },
+})
+```
+
 ## Usage
 
 Once the `client` is set up, it can be used to initiate & manage OAuth sessions.

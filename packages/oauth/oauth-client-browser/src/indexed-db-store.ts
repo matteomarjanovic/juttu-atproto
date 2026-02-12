@@ -15,6 +15,7 @@ export class IndexedDBStore<
   constructor(
     private dbName: string,
     protected maxAge = 600e3,
+    protected indexedDBFactory?: IDBFactory,
   ) {}
 
   protected async run<R>(
@@ -30,6 +31,7 @@ export class IndexedDBStore<
         },
       ],
       { durability: 'strict' },
+      this.indexedDBFactory,
     )
     try {
       return await db.transaction([storeName], mode, (tx) =>
